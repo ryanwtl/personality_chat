@@ -2,7 +2,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import emoji
 
-XLMR_PATH = r"C:\Users\User\TARUMT\project\Personality\model\model_roberta\big5\roberta8_emoji"
+XLMR_PATH = "\roberta8_emoji"
 XLMR_NAME = "xlm-roberta-base"
 models = {}
 
