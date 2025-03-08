@@ -17,7 +17,7 @@ def load_model_tokenizer(token):
     for trait in ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']:
         path = f"{model_path}{trait}"
         model = RobertaForSequenceClassification.from_pretrained(path, token=token, num_labels=1)
-        tokenizer = RobertaTokenizer.from_pretrained(model_path, token=token)
+        tokenizer = RobertaTokenizer.from_pretrained(path, token=token)
         tokenizers[trait] = tokenizer
         models[trait] = model 
     return models, tokenizers
