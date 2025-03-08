@@ -1,13 +1,21 @@
 import streamlit as st
 from groq import Groq
-import os
-from dotenv import load_dotenv
+import functions as f
+import requests
+import json
+import time
 
-load_dotenv()
-groq_api_key = os.getenv("GROQ_API_KEY")
+AUTH_TOKEN = "myToken123"
 
 # Initialize Groq client
 client = Groq()
+
+start_time = time.time()
+# Load model and tokenizer once
+if "models" not in st.session_state or "tokenizer" not in st.session_state:
+    st.session_state.models, st.session_state.tokenizer = f.load_model_tokenizer()
+
+print(f"\nload_model_tokenizer() : {time.time() - start_time}\n")
 
 # Streamlit app setup
 st.set_page_config(page_title="LLaMA 3.3 Chat Room", layout="wide")
@@ -27,8 +35,6 @@ for message in st.session_state.messages:
 
 # User input
 user_input = st.chat_input("Type your message...")
-
-# predict here
 
 if user_input:
     # Add user message to session state
@@ -62,17 +68,41 @@ if user_input:
 # Add a button to clear chat
 if st.button("Clear Chat"):
     st.session_state.messages = []
-    st.experimental_rerun()
+    st.rerun()
 
-# Instructions for running the app
-st.sidebar.header("Instructions")
-st.sidebar.markdown("1. Install the required packages with `pip install streamlit groq`.")
-st.sidebar.markdown("2. Save this code to a file, e.g., `chat_app.py`.")
-st.sidebar.markdown("3. Run the app using `streamlit run chat_app.py`.")
-st.sidebar.markdown("4. Start chatting with LLaMA 3.3!")
+# Personality trait prediction
+st.sidebar.header("Personality Traits")
+if st.session_state.messages:
+    latest_user_message = next((msg['content'] for msg in reversed(st.session_state.messages) if msg['role'] == 'user'), "")
+    if latest_user_message:
+        converted = f.convert_emojis(latest_user_message)
 
-# Footer
-st.sidebar.markdown("---")
-st.sidebar.markdown("Built with ❤️ using Streamlit and Groq API.")
+        start_time = time.time()
+        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizer)
+        analysis_time = time.time() - start_time
 
-# That’s it! Let me know if you want me to add anything. 🚀
+        print(f"\npersonality_analysis_sentence() : {analysis_time}\n")
+
+        headers = {"Authorization": f"Bearer {AUTH_TOKEN}"}
+        record = {"text": converted, "traits": traits}
+
+        print(f"\nrecord : {record}\n")
+        print(f"\nrecord_type : {type(record)}\n")
+
+        data = json.dumps(record)
+
+        try:
+            response = requests.post("http://localhost:8000", json=data, headers=headers, timeout=5)
+            response.raise_for_status()  # Raise exception for HTTP errors
+            print(f"\nresponse : {response.text}\n")
+        except requests.exceptions.ConnectionError:
+            st.warning("Receiver is not running. Please start the receiver and try again.")
+        except requests.exceptions.Timeout:
+            st.warning("Request timed out. Please check the receiver status.")
+        except requests.exceptions.HTTPError as e:
+            st.error(f"HTTP error: {e.response.status_code} - {e.response.reason}")
+        except Exception as e:
+            st.error(f"An unexpected error occurred: {e}")
+        
+        for trait, details in traits.items():
+            st.sidebar.write(f"**{trait.capitalize()}**: {details['value'].upper()} (Score: {details['score']})")
