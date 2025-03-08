@@ -18,7 +18,7 @@ client = Groq()
 start_time = time.time()
 # Load model and tokenizer once
 if "models" not in st.session_state or "tokenizer" not in st.session_state:
-    st.session_state.models, st.session_state.tokenizer = f.load_model_tokenizer(huggingface_api_key)
+    st.session_state.models, st.session_state.tokenizers = f.load_model_tokenizer(huggingface_api_key)
 
 print(f"\nload_model_tokenizer() : {time.time() - start_time}\n")
 
@@ -83,7 +83,7 @@ if st.session_state.messages:
         converted = f.convert_emojis(latest_user_message)
 
         start_time = time.time()
-        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizer)
+        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizers)
         analysis_time = time.time() - start_time
 
         print(f"\npersonality_analysis_sentence() : {analysis_time}\n")
