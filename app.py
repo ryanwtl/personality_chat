@@ -109,7 +109,3 @@ if st.session_state.messages:
         st.sidebar.header("Validation with LLaMA")
         st.sidebar.markdown("To validate the personality traits, make sure to run the receiver script in a separate terminal.")
         st.sidebar.write(f"Validation Response: \n{validation_response}")
-            st.error(f"An unexpected error occurred: {e}")
-        
-        for trait, details in traits.items():
-            st.sidebar.write(f"**{trait.capitalize()}**: {details['value'].upper()} (Score: {details['score']})")
