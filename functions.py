@@ -1,9 +1,7 @@
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import RobertaTokenizer, RobertaForSequenceClassification
 import torch
 import emoji
 
-XLMR_PATH = "\roberta8_emoji"
-XLMR_NAME = "xlm-roberta-base"
 models = {}
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -11,22 +9,16 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def convert_emojis(text):
     return emoji.demojize(str(text))
 
-def load_model_tokenizer():
-    model_name = XLMR_NAME
-    model_path = XLMR_PATH
+def load_model_tokenizer(token):
+    model_name = ""
+    model_path = "theweekday/personality_traits_"
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = RobertaTokenizer.from_pretrained(model_path, token=huggingface_api_key)
 
     for trait in ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']:
-        if trait == 'extraversion':
-            path = r"C:\Users\User\TARUMT\project\Personality\model\model_roberta\big5\roberta8.1_emoji_lowercase"
-        else:
-            path = model_path
-        print(f"Using Device : {device}")
-        file_name = path + f"/{trait}_roberta_model.pt"
-        model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels = 1)
+        path = f"{model_path}{trait}"
+        model = RobertaForSequenceClassification.from_pretrained(path, token=token, num_labels=1)
         model.to(device)
-        model.load_state_dict(torch.load(file_name))
         models[trait] = model 
     return models, tokenizer
 
