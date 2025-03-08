@@ -1,7 +1,4 @@
 groq==0.15.0
-langchain-core==0.3.30
-matplotlib==3.10.0
-pandas==2.2.3
 python-dotenv==1.0.1
 streamlit==1.41.1
 torch==2.5.1
