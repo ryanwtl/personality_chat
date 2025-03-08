@@ -96,9 +96,9 @@ if st.session_state.messages:
             response.raise_for_status()  # Raise exception for HTTP errors
             print(f"\nresponse : {response.text}\n")
         except requests.exceptions.ConnectionError:
-            st.warning("Receiver is not running. Please start the receiver and try again.")
+            print("Receiver is not running. Please start the receiver and try again.")
         except requests.exceptions.Timeout:
-            st.warning("Request timed out. Please check the receiver status.")
+            print("Request timed out. Please check the receiver status.")
         except requests.exceptions.HTTPError as e:
             st.error(f"HTTP error: {e.response.status_code} - {e.response.reason}")
         except Exception as e:
