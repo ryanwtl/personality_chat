@@ -7,6 +7,8 @@ import time
 from dotenv import load_dotenv
 import os
 
+user_id = "user1"
+
 load_dotenv()
 huggingface_api_key = os.getenv("HUGGINGFACE_API_KEY")
 
