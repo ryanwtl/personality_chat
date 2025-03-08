@@ -1,6 +1,6 @@
 import streamlit as st
 from groq import Groq
-from functions import *
+import functions as f
 import requests
 import json
 import time
@@ -18,7 +18,7 @@ client = Groq()
 start_time = time.time()
 # Load model and tokenizer once
 if "models" not in st.session_state or "tokenizer" not in st.session_state:
-    st.session_state.models, st.session_state.tokenizer = functions.load_model_tokenizer(huggingface_api_key)
+    st.session_state.models, st.session_state.tokenizer = f.load_model_tokenizer(huggingface_api_key)
 
 print(f"\nload_model_tokenizer() : {time.time() - start_time}\n")
 
@@ -80,10 +80,10 @@ st.sidebar.header("Personality Traits")
 if st.session_state.messages:
     latest_user_message = next((msg['content'] for msg in reversed(st.session_state.messages) if msg['role'] == 'user'), "")
     if latest_user_message:
-        converted = functions.convert_emojis(latest_user_message)
+        converted = f.convert_emojis(latest_user_message)
 
         start_time = time.time()
-        traits = functions.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizer)
+        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizer)
         analysis_time = time.time() - start_time
 
         print(f"\npersonality_analysis_sentence() : {analysis_time}\n")
