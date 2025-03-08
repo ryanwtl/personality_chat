@@ -13,7 +13,7 @@ def load_model_tokenizer(token):
     model_name = ""
     model_path = "theweekday/personality_traits_"
 
-    tokenizer = RobertaTokenizer.from_pretrained(model_path, token=huggingface_api_key)
+    tokenizer = RobertaTokenizer.from_pretrained(model_path, token=token)
 
     for trait in ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']:
         path = f"{model_path}{trait}"
