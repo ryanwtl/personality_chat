@@ -83,7 +83,7 @@ if st.session_state.messages:
         converted = f.convert_emojis(latest_user_message)
 
         start_time = time.time()
-        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizer)
+        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizers)
         analysis_time = time.time() - start_time
 
         print(f"\npersonality_analysis_sentence() : {analysis_time}\n")
