@@ -83,30 +83,32 @@ if st.session_state.messages:
         converted = f.convert_emojis(latest_user_message)
 
         start_time = time.time()
-        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizers)
+        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizer)
         analysis_time = time.time() - start_time
 
         print(f"\npersonality_analysis_sentence() : {analysis_time}\n")
 
         headers = {"Authorization": f"Bearer {AUTH_TOKEN}"}
-        record = {"text": converted, "traits": traits}
+        record = {"sender_id": user_id,"text": converted, "traits": traits}
 
         print(f"\nrecord : {record}\n")
         print(f"\nrecord_type : {type(record)}\n")
+                
+        validation_response = f.validate_personality_with_llm(converted, traits, client)
+        property_recommendation = f.property_recommend(user_id, traits, client)
+        
+        for trait, details in traits.items():
+            st.sidebar.write(f"**{trait.capitalize()}**: {details['value'].upper()} (Score: {details['score']})")
 
-        data = json.dumps(record)
+        # Instructions for running the app
+        st.sidebar.markdown("---")
+        st.sidebar.header("Property Recommendation")
+        st.sidebar.write(f"Property Recommendation: \n{property_recommendation}")
 
-        try:
-            response = requests.post("http://localhost:8000", json=data, headers=headers, timeout=5)
-            response.raise_for_status()  # Raise exception for HTTP errors
-            print(f"\nresponse : {response.text}\n")
-        except requests.exceptions.ConnectionError:
-            print("Receiver is not running. Please start the receiver and try again.")
-        except requests.exceptions.Timeout:
-            print("Request timed out. Please check the receiver status.")
-        except requests.exceptions.HTTPError as e:
-            st.error(f"HTTP error: {e.response.status_code} - {e.response.reason}")
-        except Exception as e:
+        st.sidebar.markdown("---")
+        st.sidebar.header("Validation with LLaMA")
+        st.sidebar.markdown("To validate the personality traits, make sure to run the receiver script in a separate terminal.")
+        st.sidebar.write(f"Validation Response: \n{validation_response}")
             st.error(f"An unexpected error occurred: {e}")
         
         for trait, details in traits.items():
