@@ -1,4 +1,4 @@
-from transformers import RobertaTokenizer, RobertaForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import emoji
 
@@ -16,8 +16,9 @@ def load_model_tokenizer(token):
 
     for trait in ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']:
         path = f"{model_path}{trait}"
-        model = RobertaForSequenceClassification.from_pretrained(path, token=token, num_labels=1)
-        tokenizer = RobertaTokenizer.from_pretrained(path, token=token)
+        print(path)
+        model = AutoModelForSequenceClassification.from_pretrained(path, token=token, num_labels=1)
+        tokenizer = AutoTokenizer.from_pretrained(path, token=token)
         tokenizers[trait] = tokenizer
         models[trait] = model 
     return models, tokenizers
@@ -36,8 +37,8 @@ def personality_analysis_sentence(sentence, models, tokenizer, max_length=512):
             output[components[0]] = binary_value
             output[components[1]] = f"{score:.4f}"
             analysis[trait] = output
-
     return analysis
+
 def validate_personality_with_llm(text, scores, client):
     messages = [
         {"role": "system", "content": "You are an expert in personality analysis."},
@@ -57,7 +58,6 @@ def validate_personality_with_llm(text, scores, client):
     result = ""
     for chunk in completion:
         result += chunk.choices[0].delta.content or ""
-    
     return result
 
 def property_recommend(user, scores, client):
@@ -92,6 +92,5 @@ keep it brief and return in a JSON format."""}
 
     result = ""
     for chunk in completion:
-        result += chunk.choices[0].delta.content or ""
-    
+        result += chunk.choices[0].delta.content or "" 
     return result
