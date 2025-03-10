@@ -12,7 +12,7 @@ def convert_emojis(text):
 
 def load_model_tokenizer(token):
     model_name = ""
-    model_path = "theweekday/personality_traits_"
+    model_path = "theweekday/xlmRoBERTa-"
 
     for trait in ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']:
         path = f"{model_path}{trait}"
