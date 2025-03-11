@@ -4,13 +4,9 @@ import functions as f
 import requests
 import json
 import time
-from dotenv import load_dotenv
 import os
 
 user_id = "user1"
-
-load_dotenv()
-huggingface_api_key = os.getenv("HUGGINGFACE_API_KEY")
 
 AUTH_TOKEN = os.getenv("AUTH_TOKEN")
 
@@ -19,8 +15,8 @@ client = Groq()
 
 start_time = time.time()
 # Load model and tokenizer once
-if "models" not in st.session_state or "tokenizer" not in st.session_state:
-    st.session_state.models, st.session_state.tokenizers = f.load_model_tokenizer(huggingface_api_key)
+if "models" not in st.session_state or "tokenizers" not in st.session_state:
+    st.session_state.models, st.session_state.tokenizers = f.load_model_tokenizer()
 
 print(f"\nload_model_tokenizer() : {time.time() - start_time}\n")
 
