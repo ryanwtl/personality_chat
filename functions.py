@@ -1,118 +1,108 @@
-import streamlit as st
-from groq import Groq
-import functions as f
-import time
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+import emoji
 
-user_id = "user1"
+XLMR_PATH = r"C:\Users\User\TARUMT\project\Personality\model\model_roberta\big5\roberta8_emoji"
+XLMR_NAME = "xlm-roberta-base"
+models = {}
+tokenizers = {}
 
-# Initialize Groq client
-client = Groq()
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-start_time = time.time()
-# Load model and tokenizer once
-if "models" not in st.session_state or "tokenizers" not in st.session_state:
-    st.session_state.models, st.session_state.tokenizers = f.load_model_tokenizer()
+def convert_emojis(text):
+    return emoji.demojize(str(text))
 
-print(f"\nload_model_tokenizer() : {time.time() - start_time}\n")
+def load_model_tokenizer():
+    model_name = ""
+    model_path = "theweekday/xlmRoBERTa-"
 
-# Streamlit app setup
-st.set_page_config(page_title="LLaMA 3.3 Chat Room", layout="wide")
+    for trait in ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']:
+        path = f"{model_path}{trait}"
+        print(path)
+        model = AutoModelForSequenceClassification.from_pretrained(path, num_labels=1)
+        tokenizer = AutoTokenizer.from_pretrained(path)
+        tokenizers[trait] = tokenizer
+        models[trait] = model 
+    return models, tokenizers
 
-# App header
-st.title("💬 Chat with LLaMA 3.3")
-st.markdown("Welcome to the chat room! Start a conversation with LLaMA 3.3 below.")
+def personality_analysis_sentence(sentence, models, tokenizers, max_length=512):
+    analysis = {}
+    components = ['value', 'score']
+    for trait, model in models.items():
+        model.to(device)
+        encodings = tokenizers[trait]([sentence], truncation=True, padding=True, max_length=max_length, return_tensors='pt').to(device)
+        model.eval()
+        with torch.no_grad():
+            output = {}
+            score = torch.sigmoid(model(**encodings).logits).item()
+            binary_value = 'y' if score > 0.61 else 'n'
+            output[components[0]] = binary_value
+            output[components[1]] = f"{score:.4f}"
+            analysis[trait] = output
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+    return analysis
 
-# Display chat history
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+def validate_personality_with_llm(text, scores, client):
+    messages = [
+        {"role": "system", "content": "You are an expert in personality analysis."},
+        {"role": "user", "content": f"Here is a text: '{text}'. The following are personality scores: {scores}. Validate these scores based on the text, by giving a score and a brief explanation. then return in a JSON format."}
+    ]
 
-# User input
-user_input = st.chat_input("Type your message...")
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=messages,
+        temperature=1,
+        max_completion_tokens=1024,
+        top_p=1,
+        stream=True,
+        stop=None,
+    )
 
-if user_input:
-    # Add user message to session state
-    st.session_state.messages.append({"role": "user", "content": user_input})
+    result = ""
+    for chunk in completion:
+        result += chunk.choices[0].delta.content or ""
+    
+    return result
 
-    if user_input.strip().lower() == "/bye":
-        user_messages = [{'content': message['content']} for message in st.session_state.messages if message['role'] == 'user']
+def property_recommend(user, scores, client):
+    messages = [
+        {"role": "system", "content": "You are to recommend a property based on the personality traits"},
+        {"role": "user", "content": f"""Here user identity: '{user}'. The following are user's personality scores: {scores}. based on the personality traits, give suggestions on the type of property in terms of :
+1. Location
+2. Rent & Payment Terms
+3. Room & Facility Quality
+4. Amenities & Services
+5. Maintenance & Support
+6. Community Atmosphere
+7. Reputation & Reviews
+8. Safety & Security
+9. Contractual Terms & Conditions
+10. Customer Service
+11. Flexibility & Exit Options
+12. Overall Experience
+         
+keep it brief and return in a JSON format."""}
+    ]
 
-        analysis = f.end_of_chat(user_messages, st.session_state.models, st.session_state.tokenizers)
-        st.session_state.messages = []
-        with st.chat_message("assistant"):
-            st.markdown(f"Thank you for chatting with me. Goodbye!")
-            st.markdown(f"Personality Analysis:")
-            for trait, details in analysis.items():
-                st.markdown(f"**{trait.capitalize()}**: {details['value'].upper()} (Score: {details['score']})")
-        st.stop()
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=messages,
+        temperature=1,
+        max_completion_tokens=1024,
+        top_p=1,
+        stream=True,
+        stop=None,
+    )
 
-    with st.chat_message("user"):
-        st.markdown(user_input)
+    result = ""
+    for chunk in completion:
+        result += chunk.choices[0].delta.content or ""
+    
+    return result
 
-    # Stream LLaMA response
-    with st.chat_message("assistant"):
-        response_placeholder = st.empty()
-        full_response = ""
-        
-        completion = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=st.session_state.messages,
-            temperature=1,
-            max_completion_tokens=1024,
-            top_p=1,
-            stream=True,
-            stop=None,
-        )
-        
-        for chunk in completion:
-            content = chunk.choices[0].delta.content or ""
-            full_response += content
-            response_placeholder.markdown(full_response)
-        
-        # Save assistant message to session state
-        st.session_state.messages.append({"role": "assistant", "content": full_response})
+def end_of_chat(convo, models, tokenizers):
+    messages = "\n".join([msg["content"] for msg in convo[:-1]])
+    print(f"\nmessages : {messages}\n")
 
-# Add a button to clear chat
-if st.button("Clear Chat"):
-    st.session_state.messages = []
-    st.rerun()
-
-# Personality trait prediction
-st.sidebar.header("Personality Traits")
-if st.session_state.messages:
-    latest_user_message = next((msg['content'] for msg in reversed(st.session_state.messages) if msg['role'] == 'user'), "")
-    messages_analyze = "\n".join([msg["content"] for msg in st.session_state.messages if msg["role"] == "user"])
-    print(f"\nmessages_analyze : {messages_analyze}\n")
-    if latest_user_message:
-        converted = f.convert_emojis(messages_analyze)
-
-        start_time = time.time()
-        traits = f.personality_analysis_sentence(converted, st.session_state.models, st.session_state.tokenizers)
-        analysis_time = time.time() - start_time
-
-        print(f"\npersonality_analysis_sentence() : {analysis_time}\n")
-
-        record = {"sender_id": user_id,"text": converted, "traits": traits}
-
-        print(f"\nrecord : {record}\n")
-        print(f"\nrecord_type : {type(record)}\n")
-                
-        validation_response = f.validate_personality_with_llm(converted, traits, client)
-        property_recommendation = f.property_recommend(user_id, traits, client)
-        
-        for trait, details in traits.items():
-            st.sidebar.write(f"**{trait.capitalize()}**: {details['value'].upper()} (Score: {details['score']})")
-
-        # Instructions for running the app
-        st.sidebar.markdown("---")
-        st.sidebar.header("Property Recommendation")
-        st.sidebar.write(f"Property Recommendation: \n{property_recommendation}")
-
-        st.sidebar.markdown("---")
-        st.sidebar.header("Validation with LLaMA")
-        st.sidebar.markdown("To validate the personality traits, make sure to run the receiver script in a separate terminal.")
-        st.sidebar.write(f"Validation Response: \n{validation_response}")
+    traits = personality_analysis_sentence(messages, models, tokenizers)
+    return traits
