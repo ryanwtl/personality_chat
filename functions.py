@@ -10,15 +10,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def convert_emojis(text):
     return emoji.demojize(str(text))
 
-def load_model_tokenizer(token):
+def load_model_tokenizer():
     model_name = ""
     model_path = "theweekday/xlmRoBERTa-"
 
     for trait in ['openness', 'conscientiousness', 'extraversion', 'agreeableness', 'neuroticism']:
         path = f"{model_path}{trait}"
         print(path)
-        model = AutoModelForSequenceClassification.from_pretrained(path, token=token, num_labels=1)
-        tokenizer = AutoTokenizer.from_pretrained(path, token=token)
+        model = AutoModelForSequenceClassification.from_pretrained(path, num_labels=1)
+        tokenizer = AutoTokenizer.from_pretrained(path)
         tokenizers[trait] = tokenizer
         models[trait] = model 
     return models, tokenizers
