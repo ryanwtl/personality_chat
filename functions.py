@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import emoji
+import pandas
 
 XLMR_PATH = r"C:\Users\User\TARUMT\project\Personality\model\model_roberta\big5\roberta8_emoji"
 XLMR_NAME = "xlm-roberta-base"
@@ -116,6 +117,6 @@ def analysis_result_output2(analysis):
         })
     
     # Convert the results to a DataFrame
-    df = pd.DataFrame(results)
+    df = pandas.DataFrame(results)
 
     return df
