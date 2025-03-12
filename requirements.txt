@@ -1,7 +1,7 @@
 groq==0.15.0
 emoji==2.14.1
 python-dotenv==1.0.1
-streamlit==1.41.1
+streamlit==1.43.1
 torch==2.5.1
 torchaudio==2.5.1
 torchvision==0.20.1
