@@ -100,9 +100,22 @@ keep it brief and return in a JSON format."""}
     
     return result
 
-def end_of_chat(convo, models, tokenizers):
-    messages = "\n".join([msg["content"] for msg in convo[:-1]])
-    print(f"\nmessages : {messages}\n")
+def analysis_result_output2(analysis):
+    # Create a list of dictionaries to store the results for each trait
+    results = []
+    
+    for trait, details in analysis.items():
+        value = 'Yes' if details['value'] == 'y' else 'No'
+        score = float(details['score'])
+        
+        # Append the data to the results list
+        results.append({
+            "Trait": trait.capitalize(),
+            "Value (Yes/No)": value,
+            "Score": f"{score:.4f}"
+        })
+    
+    # Convert the results to a DataFrame
+    df = pd.DataFrame(results)
 
-    traits = personality_analysis_sentence(messages, models, tokenizers)
-    return traits
+    return df
