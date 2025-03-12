@@ -19,8 +19,8 @@ print(f"\nload_model_tokenizer() : {time.time() - start_time}\n")
 st.set_page_config(page_title="LLaMA 3.3 Chat Room", layout="wide")
 
 # App header
-st.title("💬 Chat with LLaMA 3.3")
-st.markdown("Welcome to the chat room! Start a conversation with LLaMA 3.3 below.")
+st.title("💬 Chatroom for Prospect")
+st.markdown("Welcome to the chat room! Start a conversation and find ur property preference.")
 
 # Initialize chat history
 if "messages" not in st.session_state:
