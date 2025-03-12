@@ -1,5 +1,5 @@
 groq==0.18.0
 emoji==2.14.1
 streamlit==1.43.1
-torch==2.6.0+cu124
+torch==2.6.0
 transformers==4.49.0
