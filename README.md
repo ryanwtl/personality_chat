@@ -118,9 +118,3 @@ All dependencies are listed in `requirements.txt`.
 ## 📬 Contact
 
 For questions, issues, or contributions, feel free to open an issue or reach out via GitHub.
-
----
-
-```
-
-Let me know if you want a version that includes badges, license section, or a deployment guide (e.g., for Streamlit Cloud or HuggingFace Spaces).
