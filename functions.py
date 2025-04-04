@@ -6,8 +6,6 @@ import streamlit as st
 import plotly.graph_objects as go
 from groq import Groq
 
-
-XLMR_PATH = r"C:\Users\User\TARUMT\project\Personality\model\model_roberta\big5\roberta8_emoji"
 XLMR_NAME = "xlm-roberta-base"
 models = {}
 tokenizers = {}
