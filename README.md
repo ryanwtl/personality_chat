@@ -1,4 +1,4 @@
-# 🧠 Personality-Based Property Recommendation App
+# 🧑🏻 Personality-Based Property Recommendation App
 
 This is a Streamlit-based interactive web application that recommends properties based on the user's personality traits. It uses advanced NLP models via the HuggingFace and Groq APIs to analyze input text and provide personality-aligned property suggestions. The app is built to visualize user profiles, property traits, and matching logic for intuitive exploration.
 
