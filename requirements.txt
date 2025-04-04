@@ -3,3 +3,5 @@ emoji==2.14.1
 streamlit==1.43.1
 torch==2.6.0
 transformers==4.49.0
+plotly==6.0.1
+pandas==2.2.3
