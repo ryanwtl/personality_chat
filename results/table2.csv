@@ -1,0 +1,6 @@
+Language,Testing Size,Token Range,Accuracy Across 5 Traits
+English,3219,18-5178,-
+Malay,145,19-3209,-
+English After Filter,42,44-109,80.00%
+Malay After Filter,42,46-109,66.19%
+Mix,100,18-227,75.80%

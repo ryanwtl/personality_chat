@@ -1,0 +1,5 @@
+Length Group,Testing Size,Token Range,Accuracy Across 5 Traits
+Very Short,87,18-43,66.21%
+Short,83,44-109,80.24%
+Medium,84,110-271,73.33%
+Long,83,273-4586,75.42%
