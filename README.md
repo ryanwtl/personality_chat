@@ -11,10 +11,7 @@ This is a Streamlit-based interactive web application that recommends properties
 ├── functions.py            # Core functions for prediction, matching, and visualization
 ├── requirements.txt        # Python dependencies
 ├── results/
-│   ├── users_table.csv     # Sample user data (displayed as table)
-│   ├── properties_table.csv# Sample property data (displayed as table)
-│   ├── user_plot.png       # User personality radar chart
-│   ├── property_plot.png   # Property alignment radar chart
+│   ├──                     # All the results related to model performance
 ```
 
 ---
@@ -22,7 +19,8 @@ This is a Streamlit-based interactive web application that recommends properties
 ## 🚀 Features
 
 - Upload and analyze user personality text
-- Predict Big Five traits (OCEAN model) using LLaMA 3.3B via Groq API
+- Predict Big Five traits (OCEAN model) using transformers model 
+- Get responses from LLaMA 3.3B via Groq API
 - Display personalized property matches
 - Visualize personality alignment through radar charts
 - Highlight personality-property compatibility
@@ -48,21 +46,24 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ### 3. Install Dependencies
 
 ```bash
+# if u have setup gpu then install torch first before install the requirements.txt
+pip install pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+
+# else simply just install the requirements.txt
 pip install -r requirements.txt
 ```
 
 ### 4. Set Up Environment Variables
 
-This app requires the HuggingFace and Groq API keys to access the LLaMA-3.3-70B model.
+This app requires the Groq API keys to access the LLaMA-3.3-70B model.
 
 Create a `.env` file or export these in your shell:
 
 ```bash
-export HUGGINGFACE_API_TOKEN=your_hf_token
 export GROQ_API_KEY=your_groq_token
 ```
 
-> Replace `your_hf_token` and `your_groq_token` with valid API keys.
+> Replace `your_groq_token` with valid API keys.
 
 ---
 
@@ -71,7 +72,7 @@ export GROQ_API_KEY=your_groq_token
 Launch the Streamlit app using:
 
 ```bash
-streamlit run app.py
+streamlit run app/app.py
 ```
 
 This will open a local URL (usually http://localhost:8501/) in your browser to interact with the app.
@@ -82,10 +83,10 @@ This will open a local URL (usually http://localhost:8501/) in your browser to i
 
 The app will automatically load and display:
 
-- **Tables**: User personality scores and property profiles from `results/users_table.csv` and `results/properties_table.csv`
+- **Tables**: performance_length.csv to show the performance of model in different length while performance_language.csv shows the performance of the model in English and Malay
 - **Radar Charts**: 
-  - `user_plot.png`: Big Five personality traits visualization
-  - `property_plot.png`: Matching property traits visualization
+  - `results\Personality Traits among Tenants from Belive.png`: Big Five personality traits visualization of the dataset
+  - `results\Number of Tenants vs. Co-occurring Traits.png`: Matching property traits visualization
 
 Make sure these files are present in the `results/` folder before running the app.
 
