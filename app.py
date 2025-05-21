@@ -25,7 +25,7 @@ if page == "Home":
     # Load and display CSV for Length Analysis
     st.subheader("Performance Based on Input Sentence Length")
     try:
-        df_length = pd.read_csv("results/table1.csv")
+        df_length = pd.read_csv("results/performance_length.csv")
         st.dataframe(df_length)
     except Exception as e:
         st.error(f"Error loading length data: {e}")
@@ -33,7 +33,7 @@ if page == "Home":
     # Load and display CSV for Language Analysis
     st.subheader("Performance Based on Input Sentence Language")
     try:
-        df_language = pd.read_csv("results/table2.csv")
+        df_language = pd.read_csv("results/performance_language.csv")
         st.dataframe(df_language)
     except Exception as e:
         st.error(f"Error loading language data: {e}")
