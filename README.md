@@ -98,8 +98,8 @@ Some key libraries include:
 
 - `streamlit`
 - `pandas`
-- `matplotlib`
-- `openai` or `groq`
+- `plotly`
+- `groq`
 - `transformers`
 - `python-dotenv`
 
