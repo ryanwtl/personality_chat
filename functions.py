@@ -5,8 +5,13 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 from groq import Groq
+from dotenv import load_dotenv
+import os
 
-XLMR_NAME = "xlm-roberta-base"
+# Load environment variables from .env file
+load_dotenv()
+groq_api_key = os.getenv("GROQ_API_KEY")
+
 models = {}
 tokenizers = {}
 
@@ -310,6 +315,7 @@ def get_llama_response(user_input):
         top_p=1,
         stop=None,
         stream=False,
+        token=groq_api_key
     )
     return chat_completion.choices[0].message.content
 
