@@ -32,7 +32,7 @@ This is a Streamlit-based interactive web application that recommends properties
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/property-personality-app.git
+git clone https://github.com/ryanwtl/property-personality-app.git
 cd property-personality-app
 ```
 
@@ -46,7 +46,11 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 ### 3. Install Dependencies
 
 ```bash
-# if u have setup gpu then install torch first before install the requirements.txt
+# if u have setup CUDA GPU then install torch first before install the requirements.txt
+# check for version compatibility in this website
+https://pytorch.org/get-started/locally/
+
+# for my device i use
 pip install pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 
 # else simply just install the requirements.txt
