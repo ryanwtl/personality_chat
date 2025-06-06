@@ -106,6 +106,8 @@ Some key libraries include:
 - `groq`
 - `transformers`
 - `python-dotenv`
+- `pytorch`
+- `emoji`
 
 All dependencies are listed in `requirements.txt`.
 
